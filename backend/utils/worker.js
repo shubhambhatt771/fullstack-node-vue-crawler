@@ -2,7 +2,6 @@ const workerpool = require("workerpool");
 
 const {
   elasticClient,
-  insertDataToElasticDb,
   addDataToDb,
 } = require("./elasticClient");
 const {

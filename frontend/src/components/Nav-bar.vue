@@ -1,6 +1,6 @@
 <template>
   <nav class="navbar bg-primary">
-    <RouterLink class="navbar-brand text-light" to="/">Brand</RouterLink>
+    <RouterLink class="navbar-brand text-light" to="/">Company Details</RouterLink>
   </nav>
 </template>
 <script setup>

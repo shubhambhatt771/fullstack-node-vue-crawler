@@ -163,7 +163,8 @@
 
                         <button class="btn btn-primary me-3" type="submit">{{ mode === 'add' ? 'Add' : 'Save'
                             }}</button>
-                        <button type="button" class="btn btn-dark">Cancel</button>
+                        <RouterLink to="/" class="btn btn-dark" name="edit-btn">Cancel
+                        </RouterLink>
                     </form>
                 </div>
             </div>
@@ -285,16 +286,12 @@ const handleSubmit = () => {
         statusId,
         classId
     };
-    console.log(data, 'data to send');
     if (mode.value === 'add') {
-        console.log(data, 'data to send');
         store.dispatch('addClient', data);
 
     } else if (mode.value === 'edit') {
         const id = ref(route.params.id);
-
         store.dispatch('updateClient', { ...data, id: id.value }).then(() => {
-
         })
     }
     Swal.fire({

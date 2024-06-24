@@ -1,18 +1,25 @@
 const { config } = require("dotenv");
 const { myEmmiter } = require("./eventEmitter");
 const cheerio = require("cheerio");
-const workerpool = require('workerpool');
+const workerpool = require("workerpool");
 
-const workerPath = __dirname + '/worker.js';
-console.log(workerPath, 'workerPath');
-const pool = workerpool.pool(workerPath, {minWorkers: 4});
-console.log(pool.stats(),'stats');
+const workerPath = __dirname + "/worker.js";
+console.log(workerPath, "workerPath");
+const pool = workerpool.pool(workerPath, { minWorkers: 4 });
+console.log(pool.stats(), "stats");
 config();
 
 let crawler = null;
 
 const BASE_CRAWL_URL =
   process.env.BASE_CRAWL_URL ?? "https://companydetails.in";
+
+function setupCrawler() {
+  myEmmiter.on("start-crawling", (url = "https://www.companydetails.in") => {
+    console.log("start-crawling", url);
+    crawlWeb(url);
+  });
+}
 
 async function loadCrawler() {
   const { default: Crawler } = await import("crawler");
@@ -26,7 +33,6 @@ async function loadCrawler() {
         console.log("error", err);
       } else {
         const $ = res.$;
-        // console.log($('title').text());
         let currentUrl = res.options.url;
         if (currentUrl.includes("/company/")) {
           await handleCompanyDetails($);
@@ -37,20 +43,17 @@ async function loadCrawler() {
           .filter((i, link) => link.includes("/company/"))
           .get();
 
-        // console.log(links, " links");
         const fullUrlLinks = links.map((url) => {
           if (!url.includes("http")) {
             url = getFullUrl(url);
           }
-          // console.log(url,'url here');
           return url;
+
           // check if it is already passed in db earlier
-          crawler.add(url);
         });
         crawler.add([...fullUrlLinks]);
         console.log("calling done");
         done();
-        // console.log(res,'res here');
       }
     },
   });
@@ -60,22 +63,8 @@ loadCrawler();
 async function crawlWeb(url) {
   if (!url.includes("http")) {
     url = getFullUrl(url);
-    console.log(url, "fetched");
   }
-
   crawler.add([url]);
-
-  // const response = await fetch(url);
-  // const htmlText = await response.text();
-
-  // if (url.includes('/company/')){
-  //   await handleCompanyDetails(htmlText)
-  // }
-  //   const $ = cheerio.load(htmlText);
-  //   let links = $('a').map((i,link)=> link.attribs.href).filter((i,link)=>link.includes('/company/')).get();
-  //   links.forEach((link)=>{
-  //     crawlWeb(link);
-  //   });
 }
 
 async function handleCompanyDetails($) {
@@ -99,30 +88,31 @@ async function handleCompanyDetails($) {
   );
 
   const data = {
-    name: basicDetailsJson['Company Name'],
-    roc: basicDetailsJson['RoC'],
-    status: basicDetailsJson['Company Status'],
-    cin: basicDetailsJson['CIN'],
-    registrationDate: basicDetailsJson['Registration Date'],
-    category: basicDetailsJson['Category'],
-    subCategory: basicDetailsJson['Sub Category'],
-    class: basicDetailsJson['Company Class'],
-    authorisedCapital: basicDetailsJson['Authorised Capital'],
-    paidUpCapital: basicDetailsJson['PaidUp Capital'],    
-    state: contactDetailsJson['State'],
-    pin: contactDetailsJson['PIN Code'],
-    country: contactDetailsJson['Country'],
-    address: contactDetailsJson['Address'],
-    email: contactDetailsJson['Email']
-  }
+    name: basicDetailsJson["Company Name"],
+    roc: basicDetailsJson["RoC"],
+    status: basicDetailsJson["Company Status"],
+    cin: basicDetailsJson["CIN"],
+    registrationDate: basicDetailsJson["Registration Date"],
+    category: basicDetailsJson["Category"],
+    subCategory: basicDetailsJson["Sub Category"],
+    class: basicDetailsJson["Company Class"],
+    authorisedCapital: basicDetailsJson["Authorised Capital"],
+    paidUpCapital: basicDetailsJson["PaidUp Capital"],
+    state: contactDetailsJson["State"],
+    pin: contactDetailsJson["PIN Code"],
+    country: contactDetailsJson["Country"],
+    address: contactDetailsJson["Address"],
+    email: contactDetailsJson["Email"],
+  };
 
-  const isPromise = pool.exec('syncCrawledDataToDb', [data]).then((res)=>console.log('worker res',res));
+  const isPromise = pool
+    .exec("syncCrawledDataToDb", [data])
+    .then((res) => console.log("worker res", res));
   await new Promise((res, rej) => {
     setTimeout(() => {
       res();
     }, 3000);
   });
-  console.log("returning from fun");
 }
 
 function parseDetailsFromHtmlElements(elements, $) {
@@ -136,15 +126,8 @@ function parseDetailsFromHtmlElements(elements, $) {
   return data;
 }
 
-function parseContactDetailsFromHtmlElements(elements) {}
-
 function getFullUrl(url) {
   return (url = BASE_CRAWL_URL + url);
 }
-function setupCrawl() {
-  myEmmiter.on("start-crawling", (url = "https://www.companydetails.in") => {
-    console.log("start-crawling", url);
-    crawlWeb(url);
-  });
-}
-exports.setupCrawl = setupCrawl;
+
+exports.setupCrawler = setupCrawler;

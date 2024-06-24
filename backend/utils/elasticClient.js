@@ -12,7 +12,6 @@ const elasticClient = new Client({
   },
 });
 
-console.log("file read");
 
 async function addDataToDb(data, id) {
   const res = await elasticClient.index({
@@ -29,7 +28,7 @@ async function checkTableExists() {
   const tableExists = await elasticClient.indices.exists({
     index: "companies",
   });
-  console.log(tableExists, "exist");
+  // console.log(tableExists, "exist table");
   if (!tableExists) {
     await elasticClient.indices.create(
       {
@@ -37,7 +36,6 @@ async function checkTableExists() {
       },
       (err, res, status) => {
         updateMappings();
-        console.log(res, "res", status);
       }
     );
   }
@@ -69,15 +67,6 @@ async function updateMappings() {
     },
   });
 }
-async function insertDataToElasticDb(document, id) {
-  console.log("inside elastic db", document);
-  const res = await elasticClient.index({
-    index: "companies",
-    id,
-    document: document,
-  });
-  console.log(res, "created docu");
-}
 
 async function getTableDocs() {
   res = await elasticClient.search({
@@ -102,9 +91,6 @@ async function getDocById() {
   console.log(res, "fetch data");
 }
 
-// checkTableExists();
-// updateMappings();
-// getTableDocs();
 
 module.exports = {
   elasticClient,

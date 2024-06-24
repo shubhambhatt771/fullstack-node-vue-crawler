@@ -6,6 +6,8 @@ const router = express.Router();
 
 router.get('/', getClients);
 router.post('/', addClient);
+
+
 router.get('/categories', getClientCategories);
 router.get('/sub-categories', getClientSubCategories);
 router.get('/status', getClientStatuses),

@@ -24,7 +24,7 @@ export default {
     state.classes = data.classes
   },
   removeClient: (state, id) => {
-    state.clients = state.clients.clients.filter((client) => client._id !== id)
+    state.clients.clients = state.clients.clients.filter((client) => client._id !== id)
   },
 
   updateClient: (state, { id, ...data }) => {
