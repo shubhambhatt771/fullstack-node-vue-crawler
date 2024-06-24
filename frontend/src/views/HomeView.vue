@@ -15,7 +15,6 @@ onMounted(() => {
 const isLoading = computed(() => store.state.isLoading)
 const clients = computed(() => store.getters.getClients)
 const paginationInfo = computed(() => store.getters.getPaginationInfo);
-console.log(paginationInfo.value, 'pgi');
 const isFirstPage = ref(true);
 const isLastPage = ref(false);
 const pages = ref([1, 2, 3, 4]);
@@ -34,7 +33,6 @@ watch(() => paginationInfo.value, (newV) => {
     start++;
   }
   pages.value = pagesArray;
-  console.log(pagesArray, 'array');
 });
 
 
@@ -67,7 +65,6 @@ watch(() => search.value, (newVal) => {
 });
 
 const searchClients = (pageNumber = 0) => {
-  console.log(pageNumber, 'page here');
   store.dispatch('fetchCompanies', { q: search.value, pageNumber });
 }
 </script>

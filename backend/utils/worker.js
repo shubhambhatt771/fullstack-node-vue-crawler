@@ -18,7 +18,7 @@ const {
 } = require("@elastic/elasticsearch/lib/api/api/clear_scroll");
 
 async function syncCrawledDataToDb(data) {
-  console.log(data, "data here");
+  console.log(data, "data to add to DBs");
 
   const {
     category,

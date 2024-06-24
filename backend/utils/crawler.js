@@ -4,9 +4,7 @@ const cheerio = require("cheerio");
 const workerpool = require("workerpool");
 
 const workerPath = __dirname + "/worker.js";
-console.log(workerPath, "workerPath");
 const pool = workerpool.pool(workerPath, { minWorkers: 4 });
-console.log(pool.stats(), "stats");
 config();
 
 let crawler = null;
@@ -34,6 +32,7 @@ async function loadCrawler() {
       } else {
         const $ = res.$;
         let currentUrl = res.options.url;
+        console.log('URL crawled ', currentUrl);
         if (currentUrl.includes("/company/")) {
           await handleCompanyDetails($);
         }
@@ -50,17 +49,17 @@ async function loadCrawler() {
           return url;
           // check if it is already passed in db earlier
         });
-        fullUrlLinks = fullUrlLinks.filter((url)=>{
+        fullUrlLinks = fullUrlLinks.filter((url) => {
           try {
             new URL(url);
-            if(!url.includes('companydetails')) return false;
+            if (!url.includes("companydetails")) return false;
             return true;
           } catch (err) {
             return false;
           }
         });
         crawler.add([...fullUrlLinks]);
-        console.log("calling done");
+        console.log("calling done callback");
         done();
       }
     },
@@ -122,14 +121,9 @@ async function handleCompanyDetails($) {
     email: contactDetailsJson["Email"],
   };
 
-  const isPromise = pool
+  pool
     .exec("syncCrawledDataToDb", [data])
-    .then((res) => console.log("worker res", res));
-  await new Promise((res, rej) => {
-    setTimeout(() => {
-      res();
-    }, 3000);
-  });
+    .then(() => console.log("data synced to db"));
 }
 
 function parseDetailsFromHtmlElements(elements, $) {

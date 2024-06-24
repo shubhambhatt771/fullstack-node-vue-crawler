@@ -88,7 +88,6 @@ async function getDocById() {
     index: "companies",
     id: 1,
   });
-  console.log(res, "fetch data");
 }
 
 

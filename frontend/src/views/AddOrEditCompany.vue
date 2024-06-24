@@ -212,7 +212,6 @@ const mode = computed(() => {
     return 'add';
 });
 
-console.log('mode', mode);
 
 
 const categories = computed(() => store.getters.getCategories);
@@ -221,25 +220,18 @@ const subCategories = computed(() => store.getters.getSubCategories);
 const companyClasses = computed(() => store.getters.getCompanyClasses);
 const rocs = computed(() => store.getters.getRocs);
 const client = computed(() => store.getters.getSingleClient);
-console.log(client.value, 'client');
 
-watch(mode.value, (newV) => {
-    console.log(newV, 'new modo');
-})
 
 if (mode.value === 'edit') {
     const id = ref(route.params.id);
-    console.log(id.value, ' id to fetch');
     store.dispatch('fetchSingleClient', id.value);
 }
 
 watch(() => client.value, (newC) => {
-    console.log(newC, 'new');
     setFormValues();
 }, { deep: true });
 
 const setFormValues = () => {
-    console.log(client.value, 'client here');
     name.value = client.value._source.name;
     cin.value = client.value._source.cin;
     email.value = client.value._source.email;
@@ -264,7 +256,6 @@ const handleSubmit = () => {
     const statusId = statuses.value.find((st) => st.name === status.value)['id'];
     const rocId = rocs.value.find((r) => r.name === roc.value)['id'];
 
-    console.log(categoryId, subCategoryId, classId, statusId, rocId, ' data ids');
     const data = {
         name: name.value,
         status: status.value,

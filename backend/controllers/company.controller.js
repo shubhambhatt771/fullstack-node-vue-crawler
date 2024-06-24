@@ -11,12 +11,10 @@ exports.getClients = async (req, res) => {
   let { q, page:pageNumber } = req.query;
   pageNumber = pageNumber ? pageNumber - 1 : 0;
   let from = pageNumber * 20;
-  console.log(pageNumber, 'pagenumber ', from);
   let query = {
     match_all: {},
   };
   if (q && q.length > 0) {
-    console.log(q, "query here");
     query = {
       multi_match: {
         query: q,
@@ -87,7 +85,6 @@ exports.getClientById = async (req, res) => {
   try {
     const id = req.params.id;
     const company = await Company.findByPk(id);
-    console.log(company, "company mysql");
     const client = await elasticClient.get({
       index: "companies",
       id: id,
@@ -133,7 +130,6 @@ exports.deleteClient = async (req, res) => {
 
     const company = await Company.findByPk(Number(id));
     company.destroy();
-    console.log("document and sql row deleted");
     res.status(200).json({
       success: true,
       message: "Client deleted successfully",

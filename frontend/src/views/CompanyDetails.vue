@@ -152,7 +152,6 @@ onMounted(() => {
 })
 
 watch(() => route.params.id, (newId) => {
-    console.log('inside watch', newId, id.value);
     if (newId != id.value) {
         id.value = newId;
         store.dispatch('fetchSingleClient', newId)

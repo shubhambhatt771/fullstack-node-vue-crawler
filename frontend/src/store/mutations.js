@@ -28,13 +28,6 @@ export default {
   },
 
   updateClient: (state, { id, ...data }) => {
-    state.clients.client._source = data
-    if (state.clients.clients.length) {
-      // const otherClients = state.clients.clients.filter((client) => client._id !== id)
-      // console.log(state.clients, 'cli')
-      // const client = state.clients.clients.find((c) => c._id == id)
-      // client._source = data
-      // state.clients = [client, ...otherClients]
-    }
+    state.client._source = data
   }
 }
