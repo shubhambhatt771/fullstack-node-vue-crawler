@@ -40,16 +40,24 @@ async function loadCrawler() {
         // get all links in current page
         let links = $("a")
           .map((i, link) => link.attribs.href)
-          .filter((i, link) => link.includes("/company/"))
           .get();
 
-        const fullUrlLinks = links.map((url) => {
+        let fullUrlLinks = links.map((url) => {
           if (!url.includes("http")) {
             url = getFullUrl(url);
           }
-          return url;
 
+          return url;
           // check if it is already passed in db earlier
+        });
+        fullUrlLinks = fullUrlLinks.filter((url)=>{
+          try {
+            new URL(url);
+            if(!url.includes('companydetails')) return false;
+            return true;
+          } catch (err) {
+            return false;
+          }
         });
         crawler.add([...fullUrlLinks]);
         console.log("calling done");
@@ -57,6 +65,15 @@ async function loadCrawler() {
       }
     },
   });
+}
+
+function isValidUrl(urlString) {
+  try {
+    new URL(urlString);
+    return true;
+  } catch (err) {
+    return false;
+  }
 }
 
 loadCrawler();
