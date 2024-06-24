@@ -2,7 +2,6 @@
 import { RouterView } from 'vue-router'
 import AppLayout from './components/app-layout.vue'
 import NavBar from './components/Nav-bar.vue'
-import AppFooter from './components/app-footer.vue'
 </script>
 
 <template>
@@ -14,6 +13,5 @@ import AppFooter from './components/app-footer.vue'
       <RouterView />
     </template>
 
-    <template #footer> <app-footer></app-footer> </template>
   </AppLayout>
 </template>
